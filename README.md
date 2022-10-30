@@ -14,3 +14,12 @@ python2 -m pip install pyserial
 python2 -m pip install colorzero
 
 python2 -m pip install rpi.gpio
+
+### lighttpd access rights
+sudo groupadd www-data
+
+sudo usermod -G www-data -a pi
+
+sudo chown -R www-data:www-data /var/www/html
+
+sudo chmod -R 775 /var/www/html
