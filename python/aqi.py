@@ -5,7 +5,9 @@
 from __future__ import print_function
 import serial, struct, sys, time, json, subprocess
 from gpiozero import Button
+from gpiozero import LED
 
+Warnled = LED(23)
 Door = Button(18)
 
 DEBUG = 0
@@ -153,9 +155,12 @@ if __name__ == "__main__":
               print("PM2.5: ", values[0], ", PM10: ", values[1])
               pm25Average = getLastAverage(100)
               if values[0] > pm25Average + 10:
+                Warnled.on()
                 if not Door.is_pressed:
                     print("Smoke Alarm")
                     subprocess.call(["mpg123", "/home/pi/alarm1.mp3"])
+              else:
+                Warnled.off()
               time.sleep(2)
 
         # open stored data
