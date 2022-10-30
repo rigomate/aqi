@@ -149,7 +149,7 @@ if __name__ == "__main__":
     cmd_set_mode(MODE_QUERY);
     while True:
         cmd_set_sleep(0)
-        for t in range(30):
+        for t in range(40):
             values = cmd_query_data();
             if values is not None and len(values) == 2:
               print("PM2.5: ", values[0], ", PM10: ", values[1])
@@ -187,5 +187,5 @@ if __name__ == "__main__":
             
         print("Going to sleep for 30 seconds...")
         cmd_set_sleep(1)
-        time.sleep(30)
+        time.sleep(10)
 
