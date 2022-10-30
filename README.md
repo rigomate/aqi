@@ -16,10 +16,11 @@ python2 -m pip install colorzero
 python2 -m pip install rpi.gpio
 
 ### lighttpd access rights
-sudo groupadd www-data
 
-sudo usermod -G www-data -a pi
+sudo chown www-data:www-data -R /var/www
 
-sudo chown -R www-data:www-data /var/www/html
+sudo chmod g+rw -R /var/www
 
-sudo chmod -R 775 /var/www/html
+sudo chmod g+s -R /var/www
+
+sudo usermod -a -G www-data pi
