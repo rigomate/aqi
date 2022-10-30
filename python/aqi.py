@@ -6,7 +6,7 @@ from __future__ import print_function
 import serial, struct, sys, time, json, subprocess
 from gpiozero import Button
 
-Door = Button(14)
+Door = Button(18)
 
 DEBUG = 0
 CMD_MODE = 2
