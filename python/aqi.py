@@ -4,6 +4,9 @@
 # https://gist.github.com/kadamski/92653913a53baf9dd1a8
 from __future__ import print_function
 import serial, struct, sys, time, json, subprocess
+from gpiozero import Button
+
+Door = Button(14)
 
 DEBUG = 0
 CMD_MODE = 2
@@ -29,6 +32,35 @@ ser.open()
 ser.flushInput()
 
 byte, data = 0, ""
+
+def getLastAverage(anum):
+    try:
+        with open(JSON_FILE) as json_data:
+            data = json.load(json_data)
+    except IOError as e:
+        data = []
+    #print(len(data))
+    if(len(data) < anum):
+        return(0)
+    #print(data[-1])
+    #print(data[-2])
+    #print(data[-3])
+    #print(data[-4])
+
+    #print(type(data))
+    #print(type(data[-1]))
+
+    #print(data[-1]["pm25"])
+
+    sum = 0
+    for num in range(-1, (-1 * anum) -1, -1):
+        #print(data[num])
+        #print(data[num]["pm25"])
+        sum += data[num]["pm25"]
+        #print(sum)
+    average = sum / anum
+    print("last " + str(anum) + " average 2.5pm : " + str(average))
+    return(average)
 
 def dump(d, prefix=''):
     print(prefix + ' '.join(x.encode('hex') for x in d))
@@ -115,10 +147,15 @@ if __name__ == "__main__":
     cmd_set_mode(MODE_QUERY);
     while True:
         cmd_set_sleep(0)
-        for t in range(15):
+        for t in range(30):
             values = cmd_query_data();
             if values is not None and len(values) == 2:
               print("PM2.5: ", values[0], ", PM10: ", values[1])
+              pm25Average = getLastAverage(100)
+              if values[0] > pm25Average + 10:
+                if not Door.is_pressed:
+                    print("Smoke Alarm")
+                    subprocess.call(["mpg123", "/home/pi/alarm1.mp3"])
               time.sleep(2)
 
         # open stored data
@@ -129,7 +166,7 @@ if __name__ == "__main__":
             data = []
 
         # check if length is more than 100 and delete first element
-        if len(data) > 100:
+        if len(data) > 10000:
             data.pop(0)
 
         # append new values
@@ -143,6 +180,7 @@ if __name__ == "__main__":
         if MQTT_HOST != '':
             pub_mqtt(jsonrow)
             
-        print("Going to sleep for 1 min...")
+        print("Going to sleep for 30 seconds...")
         cmd_set_sleep(1)
-        time.sleep(60)
+        time.sleep(30)
+
