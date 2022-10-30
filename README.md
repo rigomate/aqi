@@ -3,7 +3,7 @@ Measure AQI based on PM2.5 or PM10 with a Raspberry Pi and a SDS011 particle sen
 
 # Installation for a Raspberry PI:
 
-sudo apt update && apt install python2 python-gpiozero lighttpd -y
+sudo apt update && sudo apt install python2 python-gpiozero lighttpd -y
 
 curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
 
