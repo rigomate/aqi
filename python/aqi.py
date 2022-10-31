@@ -174,6 +174,8 @@ if __name__ == "__main__":
               else:
                 Warnled.off()
               time.sleep(2)
+            if killer.kill_now:
+              break
 
         # open stored data
         try:
