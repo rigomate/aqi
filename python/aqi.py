@@ -200,9 +200,9 @@ if __name__ == "__main__":
             pub_mqtt(jsonrow)
         
         subprocess.call(["cp", JSON_FILE, JSON_FILE_BACKUP])
-        print("Going to sleep for 10 seconds...")
         cmd_set_sleep(1)
         if not killer.kill_now:
+            print("Going to sleep for 10 seconds...")
             time.sleep(10)
 
     print("End of the program. I was killed gracefully :)")
