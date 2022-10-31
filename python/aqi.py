@@ -3,7 +3,7 @@
 # "DATASHEET": http://cl.ly/ekot
 # https://gist.github.com/kadamski/92653913a53baf9dd1a8
 from __future__ import print_function
-import serial, struct, sys, time, json, subprocess
+import serial, struct, sys, time, json, subprocess, signal
 from gpiozero import Button
 from gpiozero import LED
 
@@ -35,6 +35,15 @@ ser.open()
 ser.flushInput()
 
 byte, data = 0, ""
+
+class GracefulKiller:
+    kill_now = False
+    def __init__(self):
+        signal.signal(signal.SIGINT, self.exit_gracefully)
+        signal.signal(signal.SIGTERM, self.exit_gracefully)
+
+    def exit_gracefully(self, *args):
+        self.kill_now = True
 
 def getLastAverage(anum):
     try:
@@ -145,11 +154,12 @@ def pub_mqtt(jsonrow):
 
 
 if __name__ == "__main__":
+    killer = GracefulKiller()
     cmd_set_sleep(0)
     cmd_firmware_ver()
     cmd_set_working_period(PERIOD_CONTINUOUS)
     cmd_set_mode(MODE_QUERY);
-    while True:
+    while not killer.kill_now:
         cmd_set_sleep(0)
         pm25Average = getLastAverage(20)
         for t in range(40):
@@ -191,4 +201,6 @@ if __name__ == "__main__":
         print("Going to sleep for 10 seconds...")
         cmd_set_sleep(1)
         time.sleep(10)
+
+    print("End of the program. I was killed gracefully :)")
 
