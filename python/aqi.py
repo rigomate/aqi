@@ -42,6 +42,7 @@ def getLastAverage(anum):
             data = json.load(json_data)
     except IOError as e:
         data = []
+        return(1000)
     #print(len(data))
     if(len(data) < anum):
         return(1000)
@@ -166,25 +167,25 @@ if __name__ == "__main__":
 
         # open stored data
         try:
-            with open(JSON_FILE) as json_data:
+            with open(JSON_FILE, 'r+') as json_data:
                 data = json.load(json_data)
+                # check if length is more than 100 and delete first element
+                if len(data) > 10000:
+                    data.pop(0)
+
+                # append new values
+                jsonrow = {'pm25': values[0], 'pm10': values[1], 'time': time.strftime("%d.%m.%Y %H:%M:%S")}
+                data.append(jsonrow)
+                # save it
+                json_data.seek(0)
+                json.dump(data, json_data)
         except IOError as e:
             data = []
+            jsonrow = {'pm25': values[0], 'pm10': values[1], 'time': time.strftime("%d.%m.%Y %H:%M:%S")}
+            data.append(jsonrow)
+            with open(JSON_FILE, 'w') as outfile:
+                json.dump(data, outfile)
 
-        # check if length is more than 100 and delete first element
-        if len(data) > 10000:
-            data.pop(0)
-
-        # append new values
-        jsonrow = {'pm25': values[0], 'pm10': values[1], 'time': time.strftime("%d.%m.%Y %H:%M:%S")}
-        data.append(jsonrow)
-
-        # save it
-        with open(JSON_FILE, 'w') as outfile:
-            json.dump(data, outfile)
-        
-        with open(JSON_FILE_BACKUP, 'w') as outfile2:
-            json.dump(data, outfile2)
 
         if MQTT_HOST != '':
             pub_mqtt(jsonrow)
