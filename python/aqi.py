@@ -22,6 +22,7 @@ MODE_QUERY = 1
 PERIOD_CONTINUOUS = 0
 
 JSON_FILE = '/var/www/html/aqi.json'
+JSON_FILE_BACKUP = '/home/pi/aqi-backup.json'
 
 MQTT_HOST = ''
 MQTT_TOPIC = '/weather/particulatematter'
@@ -43,7 +44,7 @@ def getLastAverage(anum):
         data = []
     #print(len(data))
     if(len(data) < anum):
-        return(0)
+        return(1000)
     #print(data[-1])
     #print(data[-2])
     #print(data[-3])
@@ -181,6 +182,9 @@ if __name__ == "__main__":
         # save it
         with open(JSON_FILE, 'w') as outfile:
             json.dump(data, outfile)
+        
+        with open(JSON_FILE_BACKUP, 'w') as outfile2:
+            json.dump(data, outfile2)
 
         if MQTT_HOST != '':
             pub_mqtt(jsonrow)
