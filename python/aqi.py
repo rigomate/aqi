@@ -149,12 +149,12 @@ if __name__ == "__main__":
     cmd_set_mode(MODE_QUERY);
     while True:
         cmd_set_sleep(0)
+        pm25Average = getLastAverage(20)
         for t in range(40):
             values = cmd_query_data();
             if values is not None and len(values) == 2:
               print("PM2.5: ", values[0], ", PM10: ", values[1])
-              pm25Average = getLastAverage(100)
-              if values[0] > pm25Average + 10:
+              if values[0] > pm25Average + 6:
                 Warnled.on()
                 if not Door.is_pressed:
                     print("Smoke Alarm")
@@ -185,7 +185,7 @@ if __name__ == "__main__":
         if MQTT_HOST != '':
             pub_mqtt(jsonrow)
             
-        print("Going to sleep for 30 seconds...")
+        print("Going to sleep for 10 seconds...")
         cmd_set_sleep(1)
         time.sleep(10)
 
