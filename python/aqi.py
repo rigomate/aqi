@@ -184,8 +184,8 @@ if __name__ == "__main__":
         except IOError as e:
             data = []
 
-        # check if length is more than 5000 and delete first element
-        if len(data) > 5000:
+        # check if length is more than 10000 and delete first element
+        if len(data) > 10000:
             data.pop(0)
 
         # append new values
