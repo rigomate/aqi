@@ -167,12 +167,10 @@ if __name__ == "__main__":
             if values is not None and len(values) == 2:
               print("PM2.5: ", values[0], ", PM10: ", values[1])
               if values[0] > pm25Average + 6:
-                Warnled.on()
+                Warnled.blink(120,0,1)
                 if not Door.is_pressed:
                     print("Smoke Alarm")
                     subprocess.call(["mpg123", "/home/pi/alarm1.mp3"])
-              else:
-                Warnled.off()
               time.sleep(2)
             if killer.kill_now:
               break
