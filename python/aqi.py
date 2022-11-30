@@ -3,7 +3,7 @@
 # "DATASHEET": http://cl.ly/ekot
 # https://gist.github.com/kadamski/92653913a53baf9dd1a8
 from __future__ import print_function
-import serial, struct, sys, time, json, subprocess, signal
+import serial, struct, time, json, subprocess, signal
 from gpiozero import Button
 from gpiozero import LED
 
@@ -22,6 +22,7 @@ MODE_QUERY = 1
 PERIOD_CONTINUOUS = 0
 
 JSON_FILE = '/var/www/html/aqi.json'
+JSON_FILE_ALARM = '/var/www/html/aqialarm.json'
 JSON_FILE_BACKUP = '/home/pi/aqi-backup.json'
 
 MQTT_HOST = ''
@@ -158,22 +159,27 @@ if __name__ == "__main__":
     cmd_set_sleep(0)
     cmd_firmware_ver()
     cmd_set_working_period(PERIOD_CONTINUOUS)
-    cmd_set_mode(MODE_QUERY);
+    cmd_set_mode(MODE_QUERY)
+    isalarm = False
     while not killer.kill_now:
         cmd_set_sleep(0)
         pm25Average = getLastAverage(20)
         for t in range(40):
-            values = cmd_query_data();
+            values = cmd_query_data()
             if values is not None and len(values) == 2:
-              print("PM2.5: ", values[0], ", PM10: ", values[1])
-              if values[0] > pm25Average + 6:
-                Warnled.blink(120,0,1)
-                if not Door.is_pressed:
-                    print("Smoke Alarm")
-                    subprocess.call(["mpg123", "/home/pi/alarm1.mp3"])
-              time.sleep(2)
+                print("PM2.5: ", values[0], ", PM10: ", values[1])
+                if values[0] > (pm25Average + 5) + pm25Average * 0.15:
+                    if not isalarm:
+                        subprocess.call(["amixer", "sset", "Headphone", "10%"])
+                    Warnled.blink(120,0,1)
+                    if not Door.is_pressed:
+                        isalarm = True
+                        print("Smoke Alarm")
+                        subprocess.call(["mpg123", "/home/pi/alarm1.mp3"])
+                        subprocess.call(["amixer", "sset", "Headphone", "7dB+"])
+                time.sleep(2)
             if killer.kill_now:
-              break
+                break
 
         # open stored data
         try:
@@ -187,7 +193,7 @@ if __name__ == "__main__":
             data.pop(0)
 
         # append new values
-        jsonrow = {'pm25': values[0], 'pm10': values[1], 'time': time.strftime("%d.%m.%Y %H:%M:%S")}
+        jsonrow = {'alarm' : isalarm, 'pm25': values[0], 'pm10': values[1], 'time': time.strftime("%d.%m.%Y %H:%M:%S")}
         data.append(jsonrow)
 
         # save it
@@ -196,7 +202,22 @@ if __name__ == "__main__":
 
         if MQTT_HOST != '':
             pub_mqtt(jsonrow)
-        
+
+        # open stored data
+        try:
+            with open(JSON_FILE_ALARM) as json_data:
+                data = json.load(json_data)
+        except IOError as e:
+            data = []
+
+        # append new values
+        jsonrow = {'alarm' : isalarm, 'time': time.strftime("%d.%m.%Y %H:%M:%S")}
+        data.append(jsonrow)
+
+        # save it
+        with open(JSON_FILE_ALARM, 'w') as outfile:
+            json.dump(data, outfile)
+
         #subprocess.call(["cp", JSON_FILE, JSON_FILE_BACKUP])
         cmd_set_sleep(1)
         if not killer.kill_now:
@@ -204,4 +225,3 @@ if __name__ == "__main__":
             time.sleep(10)
 
     print("End of the program. I was killed gracefully :)")
-

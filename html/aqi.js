@@ -43,6 +43,7 @@ function updateHtml(data) {
   document.getElementById("aqiPm10").innerHTML = aqiPm10;
   document.getElementById("pm25").innerHTML = "(PM2.5: " + data.pm25 + " µg/m³)";
   document.getElementById("pm10").innerHTML = "(PM10: " + data.pm10 + " µg/m³)";
+  document.getElementById("alarm").innerHTML = data.alarm;
 
   //set colors
   colorsPm25 = getColor(aqiPm25);
@@ -51,6 +52,14 @@ function updateHtml(data) {
   document.getElementById("containerPm25").style.color = colorsPm25.text
   document.getElementById("containerPm10").style.background = colorsPm10.bg;
   document.getElementById("containerPm10").style.color = colorsPm10.text
+
+  if(data.alarm) {
+    document.getElementById("alarm").style.color = "red"
+  }
+  else {
+    document.getElementById("alarm").style.color = "Lime"
+  }
+  
 }
 
 function updateHistoryHtml() {
@@ -89,6 +98,10 @@ function updateHistoryHtml() {
     eAqiPm10.innerHTML = aqiPm10;
     eRow.append(eAqiPm10);
 
+    let eAqiAlarm = document.createElement("td");
+    eAqiAlarm.innerHTML = data.alarm;
+    eRow.append(eAqiAlarm);
+
     let colorsPm25 = getColor(aqiPm25);
     let colorsPm10 = getColor(aqiPm10);
 
@@ -100,6 +113,13 @@ function updateHistoryHtml() {
     ePm10.style.color = colorsPm10.text
     eAqiPm10.style.background = colorsPm10.bg;
     eAqiPm10.style.color = colorsPm10.text
+
+  if(data.alarm) {
+    eAqiAlarm.style.background = "red"
+  }
+  else {
+    eAqiAlarm.style.background = "Lime"
+  }
 
     document.getElementById("historyTable").append(eRow);
   }
