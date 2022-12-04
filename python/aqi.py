@@ -160,23 +160,25 @@ if __name__ == "__main__":
     cmd_firmware_ver()
     cmd_set_working_period(PERIOD_CONTINUOUS)
     cmd_set_mode(MODE_QUERY)
-    isalarm = False
     while not killer.kill_now:
         cmd_set_sleep(0)
         pm25Average = getLastAverage(20)
+        isalarm = False
+        isSmoke = False
         for t in range(40):
             values = cmd_query_data()
             if values is not None and len(values) == 2:
                 print("PM2.5: ", values[0], ", PM10: ", values[1])
-                if values[0] > (pm25Average + 5) + pm25Average * 0.15:
+                if values[0] > (pm25Average + 5) + pm25Average * 0.9:
+                    isSmoke = True
                     if not isalarm:
-                        subprocess.call(["amixer", "sset", "Headphone", "10%"])
+                        subprocess.call(["amixer", "sset", "Headphone", "75%"])
                     Warnled.blink(120,0,1)
                     if not Door.is_pressed:
                         isalarm = True
                         print("Smoke Alarm")
                         subprocess.call(["mpg123", "/home/pi/alarm1.mp3"])
-                        subprocess.call(["amixer", "sset", "Headphone", "7dB+"])
+                        subprocess.call(["amixer", "sset", "Headphone", "5dB+"])
                 time.sleep(2)
             if killer.kill_now:
                 break
@@ -193,7 +195,7 @@ if __name__ == "__main__":
             data.pop(0)
 
         # append new values
-        jsonrow = {'alarm' : isalarm, 'pm25': values[0], 'pm10': values[1], 'time': time.strftime("%d.%m.%Y %H:%M:%S")}
+        jsonrow = {'smoke': isSmoke, 'alarm' : isalarm, 'pm25': values[0], 'pm10': values[1], 'time': time.strftime("%d.%m.%Y %H:%M:%S")}
         data.append(jsonrow)
 
         # save it
@@ -203,20 +205,21 @@ if __name__ == "__main__":
         if MQTT_HOST != '':
             pub_mqtt(jsonrow)
 
-        # open stored data
-        try:
-            with open(JSON_FILE_ALARM) as json_data:
-                data = json.load(json_data)
-        except IOError as e:
-            data = []
+        if isSmoke:
+            # open stored data
+            try:
+                with open(JSON_FILE_ALARM) as json_data:
+                    data = json.load(json_data)
+            except IOError as e:
+                data = []
 
-        # append new values
-        jsonrow = {'alarm' : isalarm, 'time': time.strftime("%d.%m.%Y %H:%M:%S")}
-        data.append(jsonrow)
+            # append new values
+            jsonrow = {'smoke': isSmoke, 'alarm' : isalarm, 'epoch' : int(time.time()),'time': time.strftime("%d.%m.%Y %H:%M:%S")}
+            data.append(jsonrow)
 
-        # save it
-        with open(JSON_FILE_ALARM, 'w') as outfile:
-            json.dump(data, outfile)
+            # save it
+            with open(JSON_FILE_ALARM, 'w') as outfile:
+                json.dump(data, outfile)
 
         #subprocess.call(["cp", JSON_FILE, JSON_FILE_BACKUP])
         cmd_set_sleep(1)
