@@ -90,6 +90,14 @@ function updateHistoryHtml() {
     eAqiPm10.innerHTML = aqiPm10;
     eRow.append(eAqiPm10);
 
+    let eAqiTemp = document.createElement("td");
+    eAqiTemp.innerHTML = data.temp;
+    eRow.append(eAqiTemp);
+    
+    let eAqiHumidity = document.createElement("td");
+    eAqiHumidity.innerHTML = data.humidity;
+    eRow.append(eAqiHumidity);
+
     let eAqiSmoke = document.createElement("td");
     eAqiSmoke.innerHTML = data.smoke;
     eRow.append(eAqiSmoke);
