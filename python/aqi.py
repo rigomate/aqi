@@ -70,10 +70,10 @@ def getLastAverage(anum):
     for num in range(-1, (-1 * anum) -1, -1):
         #print(data[num])
         #print(data[num]["pm25"])
-        sum += data[num]["pm25"]
+        sum += data[num]["pm10"]
         #print(sum)
     average = sum / anum
-    print("last " + str(anum) + " average 2.5pm : " + str(average))
+    print("last " + str(anum) + " average 10pm : " + str(average))
     return(average)
 
 def dump(d, prefix=''):
@@ -169,10 +169,10 @@ if __name__ == "__main__":
             values = cmd_query_data()
             if values is not None and len(values) == 2:
                 print("PM2.5: ", values[0], ", PM10: ", values[1])
-                if values[0] > (pm25Average + 5) + pm25Average * 0.9:
+                if values[1] > (pm25Average + 15):
                     isSmoke = True
                     if not isalarm:
-                        subprocess.call(["amixer", "sset", "Headphone", "75%"])
+                        subprocess.call(["amixer", "sset", "Headphone", "85%"])
                     Warnled.blink(120,0,1)
                     if not Door.is_pressed:
                         isalarm = True
@@ -182,6 +182,14 @@ if __name__ == "__main__":
                 time.sleep(2)
             if killer.kill_now:
                 break
+
+        f = open("/tmp/aqihumidity", "r")
+        humidity = f.readline()
+        f.close()
+
+        f = open("/tmp/aqitemp", "r")
+        temp = f.readline()
+        f.close()
 
         # open stored data
         try:
@@ -195,7 +203,7 @@ if __name__ == "__main__":
             data.pop(0)
 
         # append new values
-        jsonrow = {'smoke': isSmoke, 'alarm' : isalarm, 'pm25': values[0], 'pm10': values[1], 'time': time.strftime("%d.%m.%Y %H:%M:%S")}
+        jsonrow = {'humidity': humidity, 'temp': temp, 'smoke': isSmoke, 'alarm' : isalarm, 'pm25': values[0], 'pm10': values[1], 'time': time.strftime("%d.%m.%Y %H:%M:%S")}
         data.append(jsonrow)
 
         # save it
