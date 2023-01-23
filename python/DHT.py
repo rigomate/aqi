@@ -255,7 +255,7 @@ if __name__== "__main__":
                f.write(str(d[3]))
                f.close()
                
-         time.sleep(30)
+         time.sleep(10)
       except KeyboardInterrupt:
          break
 

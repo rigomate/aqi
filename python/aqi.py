@@ -160,15 +160,22 @@ if __name__ == "__main__":
     cmd_firmware_ver()
     cmd_set_working_period(PERIOD_CONTINUOUS)
     cmd_set_mode(MODE_QUERY)
+
     while not killer.kill_now:
         cmd_set_sleep(0)
         pm25Average = getLastAverage(20)
         isalarm = False
         isSmoke = False
+        maxpm25 = 0
+        maxpm10 = 0
         for t in range(40):
             values = cmd_query_data()
             if values is not None and len(values) == 2:
                 print("PM2.5: ", values[0], ", PM10: ", values[1])
+                if maxpm25 < values[0]:
+                    maxpm25 = values[0]
+                if maxpm10 < values[1]:
+                    maxpm10 = values[1]
                 if values[1] > (pm25Average + 15):
                     isSmoke = True
                     if not isalarm:
@@ -203,7 +210,7 @@ if __name__ == "__main__":
             data.pop(0)
 
         # append new values
-        jsonrow = {'humidity': humidity, 'temp': temp, 'smoke': isSmoke, 'alarm' : isalarm, 'pm25': values[0], 'pm10': values[1], 'time': time.strftime("%d.%m.%Y %H:%M:%S")}
+        jsonrow = {'humidity': humidity, 'temp': temp, 'smoke': isSmoke, 'alarm' : isalarm, 'pm25': maxpm25, 'pm10': maxpm10, 'time': time.strftime("%d.%m.%Y %H:%M:%S")}
         data.append(jsonrow)
 
         # save it
