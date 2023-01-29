@@ -3,7 +3,7 @@
 # "DATASHEET": http://cl.ly/ekot
 # https://gist.github.com/kadamski/92653913a53baf9dd1a8
 from __future__ import print_function
-import serial, struct, time, json, subprocess, signal
+import serial, struct, time, json, subprocess, signal, os
 from gpiozero import Button
 from gpiozero import LED
 
