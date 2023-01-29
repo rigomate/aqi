@@ -200,7 +200,8 @@ if __name__ == "__main__":
             values = cmd_query_data()
             valuepm25 = values[0]
             valuepm10 = values[1]
-            humidity = get_humidity()
+            if t % 5 == 0:
+                humidity = get_humidity()
             HumidityModifier = calcHumidityModifier(float(humidity))
             if values is not None and len(values) == 2:
                 print("PM2.5: ", valuepm25, ", PM10: ", valuepm10, ", Humidity: ", humidity, ", modifier: ", HumidityModifier, ", pm10 Alarm: ", pm10Average + (pm10AlarmLevel * HumidityModifier))
@@ -209,6 +210,11 @@ if __name__ == "__main__":
                 if maxpm10 < valuepm10:
                     maxpm10 = valuepm10
 
+                if valuepm10 > (pm10Average + (pm10AlarmLevel * HumidityModifier)):
+                    #might be an alarm, so check humidity to be sure
+                    if not isalarm:
+                        humidity = get_humidity()
+                    HumidityModifier = calcHumidityModifier(float(humidity))
                 if valuepm10 > (pm10Average + (pm10AlarmLevel * HumidityModifier)):
 
                     isSmoke = True
