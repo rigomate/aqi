@@ -203,7 +203,7 @@ if __name__ == "__main__":
             humidity = get_humidity()
             HumidityModifier = calcHumidityModifier(float(humidity))
             if values is not None and len(values) == 2:
-                print("PM2.5: ", valuepm25, ", PM10: ", valuepm10, ", Humidity: ", humidity, ", modifier: ", HumidityModifier, ", pm10 Alarm: ", pm10AlarmLevel * HumidityModifier)
+                print("PM2.5: ", valuepm25, ", PM10: ", valuepm10, ", Humidity: ", humidity, ", modifier: ", HumidityModifier, ", pm10 Alarm: ", pm10Average + (pm10AlarmLevel * HumidityModifier))
                 if maxpm25 < valuepm25:
                     maxpm25 = valuepm25
                 if maxpm10 < valuepm10:
