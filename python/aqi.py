@@ -164,15 +164,15 @@ def calcHumidityModifier(_humidity):
     if _humidity > 50:
         HumidityModifier = 1.4
     if _humidity > 60:
-        HumidityModifier = 1.7
+        HumidityModifier = 1.5
     if _humidity > 65:
-        HumidityModifier = 2
+        HumidityModifier = 1.6
     if _humidity > 70:
-        HumidityModifier = 2.5
+        HumidityModifier = 1.7
     if _humidity > 75:
-        HumidityModifier = 2.8
+        HumidityModifier = 1.8
     if _humidity > 80:
-        HumidityModifier = 3
+        HumidityModifier = 2
     return HumidityModifier
 
 if __name__ == "__main__":
