@@ -227,7 +227,7 @@ if __name__ == "__main__":
                             subprocess.call(["amixer", "sset", "Headphone", "100%"], stdout=devnull, stderr=devnull)
                             subprocess.call(["mpg123", "/home/pi/alarm2.mp3"], stdout=devnull, stderr=devnull)
                         lastalarmepoch = int(time.time())
-                        subprocess.call(["amixer", "sset", "Headphone", "85%"])
+                        subprocess.call(["amixer", "sset", "Headphone", "85%"], stdout=devnull, stderr=devnull)
                     Warnled.blink(180,0,1)
                     if not Door.is_pressed:
                         isalarm = True
