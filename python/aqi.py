@@ -153,6 +153,27 @@ def pub_mqtt(jsonrow):
     with subprocess.Popen(cmd, shell=False, bufsize=0, stdin=subprocess.PIPE).stdin as f:
         json.dump(jsonrow, f)
 
+def get_humidity():
+    subprocess.call(["python3", "DHT.py", "2"], stdout=devnull, stderr=devnull)
+    f = open("/tmp/aqihumidity", "r")
+    humidity = f.readline()
+    f.close()
+    return humidity
+
+def calcHumidityModifier(humidity):
+    if humidity > 50:
+        HumidityModifier = 1.4
+    if humidity > 60:
+        HumidityModifier = 1.7
+    if humidity > 65:
+        HumidityModifier = 2
+    if humidity > 70:
+        HumidityModifier = 2.5
+    if humidity > 75:
+        HumidityModifier = 2.8
+    if humidity > 80:
+        HumidityModifier = 3
+    return HumidityModifier
 
 if __name__ == "__main__":
     killer = GracefulKiller()
@@ -172,51 +193,20 @@ if __name__ == "__main__":
         maxpm25 = 0
         maxpm10 = 0
         valuepm10 = 0
-        valuepm25 = 0
-
-        HumidityModifier = 1
-
-        #get current humidity values
-        subprocess.call(["python3", "DHT.py", "2"], stdout=devnull, stderr=devnull)
-        f = open("/tmp/aqihumidity", "r")
-        humidity = f.readline()
-        f.close()
-
-        print("Humidity is: " + str(humidity))
+        valuepm25 = 0        
 
         for t in range(40):
             values = cmd_query_data()
             valuepm25 = values[0]
             valuepm10 = values[1]
+            humidity = get_humidity()
+            HumidityModifier = calcHumidityModifier(humidity)
             if values is not None and len(values) == 2:
-                print("PM2.5: ", valuepm25, ", PM10: ", valuepm10)
+                print("PM2.5: ", valuepm25, ", PM10: ", valuepm10, ", Humidity: ", humidity, ", modifier: ", HumidityModifier)
                 if maxpm25 < valuepm25:
                     maxpm25 = valuepm25
                 if maxpm10 < valuepm10:
                     maxpm10 = valuepm10
-                if valuepm10 > (pm10Average + (15 * HumidityModifier)):
-                    #get current humidity values to change the humidity modifier, in case the warm humid air is going out
-                    subprocess.call(["python3", "DHT.py", "2"], stdout=devnull, stderr=devnull)
-                    f = open("/tmp/aqihumidity", "r")
-                    humidity = f.readline()
-                    f.close()
-
-                    print("Humidity is: " + str(humidity))
-
-                    if humidity > 50:
-                        HumidityModifier = 1.4
-                    if humidity > 60:
-                        HumidityModifier = 1.7
-                    if humidity > 65:
-                        HumidityModifier = 2
-                    if humidity > 70:
-                        HumidityModifier = 2.5
-                    if humidity > 75:
-                        HumidityModifier = 2.8
-                    if humidity > 80:
-                        HumidityModifier = 3
-
-                    print("Humidity Modifer is now: " + str(HumidityModifier))
 
                 if valuepm10 > (pm10Average + (15 * HumidityModifier)):
 
@@ -228,12 +218,12 @@ if __name__ == "__main__":
                             subprocess.call(["mpg123", "/home/pi/alarm2.mp3"], stdout=devnull, stderr=devnull)
                         lastalarmepoch = int(time.time())
                         subprocess.call(["amixer", "sset", "Headphone", "85%"])
-                    Warnled.blink(120,0,1)
+                    Warnled.blink(180,0,1)
                     if not Door.is_pressed:
                         isalarm = True
                         print("Smoke Alarm")
                         subprocess.call(["mpg123", "/home/pi/alarm1.mp3"], stdout=devnull, stderr=devnull)
-                        subprocess.call(["amixer", "sset", "Headphone", "5dB+"], stdout=devnull, stderr=devnull)
+                        subprocess.call(["amixer", "sset", "Headphone", "2dB+"], stdout=devnull, stderr=devnull)
                 time.sleep(2)
             if killer.kill_now:
                 break
