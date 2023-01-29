@@ -185,6 +185,9 @@ if __name__ == "__main__":
     lastalarmepoch = 0
     devnull = open(os.devnull, 'w')
 
+    #init humidity reading
+    humidity = get_humidity()
+
     while not killer.kill_now:
         cmd_set_sleep(0)
         pm10Average = getLastAverage(20)
