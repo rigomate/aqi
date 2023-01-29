@@ -194,6 +194,8 @@ if __name__ == "__main__":
                     humidity = f.readline()
                     f.close()
 
+                    print("Humidity Modifer is now: " + str(HumidityModifier))
+
                     if humidity > 50:
                         HumidityModifier = 1.5
                     if humidity > 60:

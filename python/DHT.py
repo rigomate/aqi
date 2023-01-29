@@ -238,7 +238,6 @@ if __name__== "__main__":
          s = DHT.sensor(pi, g)
       S.append((g,s)) # store GPIO and class
 
-
    for s in S:
       if s[0] >= 100:
          s[1].read() # values displayed by callback
