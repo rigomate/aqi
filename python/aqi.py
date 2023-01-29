@@ -201,6 +201,9 @@ if __name__ == "__main__":
             if killer.kill_now:
                 break
 
+        if killer.kill_now:
+            break
+
         f = open("/tmp/aqihumidity", "r")
         humidity = f.readline()
         f.close()
