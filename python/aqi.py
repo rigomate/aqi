@@ -195,25 +195,27 @@ if __name__ == "__main__":
                     maxpm10 = valuepm10
                 if valuepm10 > (pm10Average + (15 * HumidityModifier)):
                     #get current humidity values to change the humidity modifier, in case the warm humid air is going out
-                    subprocess.call(["python3", "DHT.py", "2"])
+                    subprocess.call(["python3", "DHT.py", "2"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                     f = open("/tmp/aqihumidity", "r")
                     humidity = f.readline()
                     f.close()
 
-                    print("Humidity Modifer is now: " + str(HumidityModifier))
+                    print("Humidity is: " + str(humidity))
 
                     if humidity > 50:
-                        HumidityModifier = 1.5
+                        HumidityModifier = 1.4
                     if humidity > 60:
-                        HumidityModifier = 2
+                        HumidityModifier = 1.7
                     if humidity > 65:
-                        HumidityModifier = 2.5
+                        HumidityModifier = 2
                     if humidity > 70:
-                        HumidityModifier = 3
+                        HumidityModifier = 2.5
                     if humidity > 75:
-                        HumidityModifier = 3.5
+                        HumidityModifier = 2.8
                     if humidity > 80:
-                        HumidityModifier = 4
+                        HumidityModifier = 3
+
+                    print("Humidity Modifer is now: " + str(HumidityModifier))
 
                 if valuepm10 > (pm10Average + (15 * HumidityModifier)):
 
@@ -221,16 +223,16 @@ if __name__ == "__main__":
                     if not isalarm:
                         currentepoch = int(time.time())
                         if currentepoch - lastalarmepoch > (5*60):
-                            subprocess.call(["amixer", "sset", "Headphone", "100%"])
-                            subprocess.call(["mpg123", "/home/pi/alarm2.mp3"])
+                            subprocess.call(["amixer", "sset", "Headphone", "100%"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                            subprocess.call(["mpg123", "/home/pi/alarm2.mp3"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                         lastalarmepoch = int(time.time())
                         subprocess.call(["amixer", "sset", "Headphone", "85%"])
                     Warnled.blink(120,0,1)
                     if not Door.is_pressed:
                         isalarm = True
                         print("Smoke Alarm")
-                        subprocess.call(["mpg123", "/home/pi/alarm1.mp3"])
-                        subprocess.call(["amixer", "sset", "Headphone", "5dB+"])
+                        subprocess.call(["mpg123", "/home/pi/alarm1.mp3"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                        subprocess.call(["amixer", "sset", "Headphone", "5dB+"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                 time.sleep(2)
             if killer.kill_now:
                 break
