@@ -177,6 +177,12 @@ if __name__ == "__main__":
 
         #get current humidity values
         subprocess.call(["python3", "DHT.py", "2"])
+        f = open("/tmp/aqihumidity", "r")
+        humidity = f.readline()
+        f.close()
+
+        print("Humidity is: " + str(humidity))
+
         for t in range(40):
             values = cmd_query_data()
             valuepm25 = values[0]
