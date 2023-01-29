@@ -161,24 +161,35 @@ if __name__ == "__main__":
     cmd_set_working_period(PERIOD_CONTINUOUS)
     cmd_set_mode(MODE_QUERY)
 
+    lastalarmepoch = 0
+
     while not killer.kill_now:
         cmd_set_sleep(0)
-        pm25Average = getLastAverage(20)
+        pm10Average = getLastAverage(20)
         isalarm = False
         isSmoke = False
         maxpm25 = 0
         maxpm10 = 0
+        valuepm10 = 0
+        valuepm25 = 0
         for t in range(40):
             values = cmd_query_data()
+            valuepm25 = values[0]
+            valuepm10 = values[1]
             if values is not None and len(values) == 2:
-                print("PM2.5: ", values[0], ", PM10: ", values[1])
-                if maxpm25 < values[0]:
-                    maxpm25 = values[0]
-                if maxpm10 < values[1]:
-                    maxpm10 = values[1]
-                if values[1] > (pm25Average + 15):
+                print("PM2.5: ", valuepm25, ", PM10: ", valuepm10)
+                if maxpm25 < valuepm25:
+                    maxpm25 = valuepm25
+                if maxpm10 < valuepm10:
+                    maxpm10 = valuepm10
+                if valuepm10 > (pm10Average + 15):
                     isSmoke = True
                     if not isalarm:
+                        currentepoch = int(time.time())
+                        if currentepoch - lastalarmepoch > (5*60):
+                            subprocess.call(["amixer", "sset", "Headphone", "100%"])
+                            subprocess.call(["mpg123", "/home/pi/alarm2.mp3"])
+                        lastalarmepoch = int(time.time())
                         subprocess.call(["amixer", "sset", "Headphone", "85%"])
                     Warnled.blink(120,0,1)
                     if not Door.is_pressed:
