@@ -194,7 +194,7 @@ if __name__ == "__main__":
                 if maxpm10 < valuepm10:
                     maxpm10 = valuepm10
                 if valuepm10 > (pm10Average + (15 * HumidityModifier)):
-                    #get current humidity values
+                    #get current humidity values to change the humidity modifier, in case the warm humid air is going out
                     subprocess.call(["python3", "DHT.py", "2"])
                     f = open("/tmp/aqihumidity", "r")
                     humidity = f.readline()
@@ -214,6 +214,8 @@ if __name__ == "__main__":
                         HumidityModifier = 3.5
                     if humidity > 80:
                         HumidityModifier = 4
+
+                if valuepm10 > (pm10Average + (15 * HumidityModifier)):
 
                     isSmoke = True
                     if not isalarm:
