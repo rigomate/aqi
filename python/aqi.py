@@ -160,18 +160,18 @@ def get_humidity():
     f.close()
     return humidity
 
-def calcHumidityModifier(humidity):
-    if humidity > 50:
+def calcHumidityModifier(_humidity):
+    if _humidity > 50:
         HumidityModifier = 1.4
-    if humidity > 60:
+    if _humidity > 60:
         HumidityModifier = 1.7
-    if humidity > 65:
+    if _humidity > 65:
         HumidityModifier = 2
-    if humidity > 70:
+    if _humidity > 70:
         HumidityModifier = 2.5
-    if humidity > 75:
+    if _humidity > 75:
         HumidityModifier = 2.8
-    if humidity > 80:
+    if _humidity > 80:
         HumidityModifier = 3
     return HumidityModifier
 
