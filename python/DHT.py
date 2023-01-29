@@ -238,26 +238,26 @@ if __name__== "__main__":
          s = DHT.sensor(pi, g)
       S.append((g,s)) # store GPIO and class
 
-   while True:
-      try:
-         for s in S:
-            if s[0] >= 100:
-               s[1].read() # values displayed by callback
-            else:
-               d = s[1].read()
-               print("{:.3f} {:2d} {} {:3.1f} {:3.1f}".
-                  format(d[0], d[1], d[2], d[3], d[4]))
-               f = open("/tmp/aqihumidity", "w")
-               f.write(str(d[4]))
-               f.close()
 
-               f = open("/tmp/aqitemp", "w")
-               f.write(str(d[3]))
-               f.close()
-               
-         time.sleep(10)
-      except KeyboardInterrupt:
-         break
+   try:
+      for s in S:
+         if s[0] >= 100:
+            s[1].read() # values displayed by callback
+         else:
+            d = s[1].read()
+            print("{:.3f} {:2d} {} {:3.1f} {:3.1f}".
+               format(d[0], d[1], d[2], d[3], d[4]))
+            f = open("/tmp/aqihumidity", "w")
+            f.write(str(d[4]))
+            f.close()
+
+            f = open("/tmp/aqitemp", "w")
+            f.write(str(d[3]))
+            f.close()
+            
+      time.sleep(10)
+   except KeyboardInterrupt:
+      break
 
    for s in S:
       s[1].cancel()

@@ -172,6 +172,11 @@ if __name__ == "__main__":
         maxpm10 = 0
         valuepm10 = 0
         valuepm25 = 0
+
+        HumidityModifier = 1
+
+        #get current humidity values
+        subprocess.call(["python3", "DHT.py", "2"])
         for t in range(40):
             values = cmd_query_data()
             valuepm25 = values[0]
@@ -182,7 +187,26 @@ if __name__ == "__main__":
                     maxpm25 = valuepm25
                 if maxpm10 < valuepm10:
                     maxpm10 = valuepm10
-                if valuepm10 > (pm10Average + 15):
+                if valuepm10 > (pm10Average + (15 * HumidityModifier)):
+                    #get current humidity values
+                    subprocess.call(["python3", "DHT.py", "2"])
+                    f = open("/tmp/aqihumidity", "r")
+                    humidity = f.readline()
+                    f.close()
+
+                    if humidity > 50:
+                        HumidityModifier = 1.5
+                    if humidity > 60:
+                        HumidityModifier = 2
+                    if humidity > 65:
+                        HumidityModifier = 2.5
+                    if humidity > 70:
+                        HumidityModifier = 3
+                    if humidity > 75:
+                        HumidityModifier = 3.5
+                    if humidity > 80:
+                        HumidityModifier = 4
+
                     isSmoke = True
                     if not isalarm:
                         currentepoch = int(time.time())
