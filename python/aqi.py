@@ -285,9 +285,9 @@ if __name__ == "__main__":
                 json.dump(data, outfile)
 
         #subprocess.call(["cp", JSON_FILE, JSON_FILE_BACKUP])
-        cmd_set_sleep(1)
+        #cmd_set_sleep(1)
         if not killer.kill_now:
             print("Going to sleep for 10 seconds...")
-            time.sleep(10)
+            time.sleep(1)
 
     print("End of the program. I was killed gracefully :)")
