@@ -176,7 +176,7 @@ if __name__ == "__main__":
         HumidityModifier = 1
 
         #get current humidity values
-        subprocess.call(["python3", "DHT.py", "2"])
+        subprocess.call(["python3", "DHT.py", "2"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         f = open("/tmp/aqihumidity", "r")
         humidity = f.readline()
         f.close()
