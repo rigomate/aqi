@@ -198,7 +198,7 @@ if __name__ == "__main__":
         maxpm10 = 0
         valuepm10 = 0
         valuepm25 = 0
-        pm10AlarmLevel = 15
+        pm10AlarmLevel = 8
 
         for t in range(40):
             values = cmd_query_data()
@@ -234,7 +234,7 @@ if __name__ == "__main__":
                         isalarm = True
                         print("Smoke Alarm")
                         subprocess.call(["mpg123", "/home/pi/alarm1.mp3"], stdout=devnull, stderr=devnull)
-                        subprocess.call(["amixer", "sset", "Headphone", "2dB+"], stdout=devnull, stderr=devnull)
+                        subprocess.call(["amixer", "sset", "Headphone", "3dB+"], stdout=devnull, stderr=devnull)
                 time.sleep(2)
             if killer.kill_now:
                 break
